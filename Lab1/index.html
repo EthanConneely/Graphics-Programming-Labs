@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Page Title</title>
+    <style type="text/css">
+        #mainCanvas {
+            border-width: 4px;
+            border-style: solid;
+            border-color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="mainCanvas" width="800" height="600"></canvas>
+
+    <script type="text/javascript">
+        setInterval(Loop, 100)
+
+        let delayedMove = 0;
+
+        setTimeout(() => delayedMove = 50, 5000);
+
+        let angle = Math.PI / 4;
+
+        let flip = false
+
+        let timer = 0;
+
+        function Loop()
+        {
+            timer += .1;
+
+            let percent = timer % 1;
+            if (percent > 0.5)
+            {
+                angle = (Math.PI / 4) * (percent * 2 % 1);
+            }
+            else
+            {
+                angle = (Math.PI / 4) * ((1 - percent) * 2 % 1);
+            }
+
+            /** @type {HTMLCanvasElement} */
+            let canvas = document.getElementById("mainCanvas");
+            /** @type {CanvasRenderingContext2D} */
+            let ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, 800, 600)
+
+            ctx.fillStyle = "rgb(0,0,0)";
+            ctx.font = "25px Arial";
+            ctx.fillText("Ethan Conneely - G00393941", 250, 23);
+
+            ctx.fillStyle = "rgb(255,0,0)";
+            ctx.fillRect(40, 40, 100, 120);
+
+            ctx.fillStyle = "rgba(0,255,0,.4)";
+            ctx.fillRect(80, 90, 100, 120);
+
+            ctx.beginPath();
+            ctx.arc(325 + delayedMove, 200, 100, 0, Math.PI * 2, false);
+            ctx.fillStyle = "rgb(0,128,255)";
+            ctx.strokeStyle = "rgb(64,0,255)";
+            ctx.lineWidth = 10;
+            ctx.stroke();
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(200, 400, 100, 0, Math.PI * 2, false);
+            ctx.strokeStyle = "rgb(255,0,255)";
+            ctx.fillStyle = "rgb(0,255,255)";
+            ctx.lineWidth = 25;
+            ctx.stroke();
+            ctx.fill();
+
+            ctx.strokeStyle = "rgb(0,0,0)";
+            ctx.lineWidth = 5;
+            let x = 400;
+            let y = 400;
+            ctx.strokeRect(x, y, 100, 100);
+
+
+            ctx.beginPath();
+            ctx.arc(x + 50, y + 50, 50, 0, Math.PI * 2);
+            ctx.stroke();
+
+            let r = 50
+
+            let px = 0;
+            let py = 0;
+
+            ctx.beginPath();
+            ctx.moveTo(600, 250);
+            px = r * Math.cos(angle);
+            py = r * Math.sin(angle);
+            ctx.lineTo(600 + px, 250 + py);
+
+            ctx.arc(600, 250, r, angle, (Math.PI * 2) - angle);
+
+            ctx.moveTo(600, 250);
+            px = r * Math.cos(angle);
+            py = - r * Math.sin(angle);
+            ctx.lineTo(600 + px, 250 + py);
+
+            ctx.fillStyle = "rgb(255,255,0)";
+
+            // ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // ctx.beginPath();
+            // ctx.arc(600, 250, r, angle, (Math.PI * 2) - angle);
+            // ctx.lineTo(600, 250);
+
+
+            // ctx.fillStyle = "rgb(255,255,0)";
+
+            // ctx.closePath();
+            // ctx.fill();
+            // ctx.stroke();
+
+        }
+
+    </script>
+</body>
+
+</html>
