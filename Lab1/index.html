@@ -10,6 +10,7 @@
             border-style: solid;
             border-color: black;
         }
+
     </style>
 </head>
 
@@ -17,7 +18,7 @@
     <canvas id="mainCanvas" width="800" height="600"></canvas>
 
     <script type="text/javascript">
-        setInterval(Loop, 100)
+        requestAnimationFrame(Loop)
 
         let delayedMove = 0;
 
@@ -27,13 +28,12 @@
 
         let flip = false
 
-        let timer = 0;
 
-        function Loop()
+        function Loop(ts)
         {
-            timer += .1;
+            let timer = ts / 1000;
 
-            let percent = timer % 1;
+            let percent = (timer * 4) % 1;
             if (percent > 0.5)
             {
                 angle = (Math.PI / 4) * (percent * 2 % 1);
@@ -43,23 +43,31 @@
                 angle = (Math.PI / 4) * ((1 - percent) * 2 % 1);
             }
 
+            // Comments for vscode intilisense
             /** @type {HTMLCanvasElement} */
             let canvas = document.getElementById("mainCanvas");
+
             /** @type {CanvasRenderingContext2D} */
             let ctx = canvas.getContext('2d');
 
-            ctx.clearRect(0, 0, 800, 600)
+            // Clear screen for animation
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
 
+            // Name and id
             ctx.fillStyle = "rgb(0,0,0)";
             ctx.font = "25px Arial";
             ctx.fillText("Ethan Conneely - G00393941", 250, 23);
 
+            // Red rect
             ctx.fillStyle = "rgb(255,0,0)";
             ctx.fillRect(40, 40, 100, 120);
 
+            // Transparent green Rectangle
             ctx.fillStyle = "rgba(0,255,0,.4)";
             ctx.fillRect(80, 90, 100, 120);
 
+
+            // Blue circle with blue outline
             ctx.beginPath();
             ctx.arc(325 + delayedMove, 200, 100, 0, Math.PI * 2, false);
             ctx.fillStyle = "rgb(0,128,255)";
@@ -68,21 +76,25 @@
             ctx.stroke();
             ctx.fill();
 
+            // Orange circle with red outline
+            ctx.setLineDash([20, 20])
             ctx.beginPath();
             ctx.arc(200, 400, 100, 0, Math.PI * 2, false);
-            ctx.strokeStyle = "rgb(255,0,255)";
-            ctx.fillStyle = "rgb(0,255,255)";
+            ctx.strokeStyle = "rgb(255,0,0)";
+            ctx.fillStyle = "rgb(255,128,0)";
             ctx.lineWidth = 25;
             ctx.stroke();
             ctx.fill();
+            ctx.setLineDash([])
 
+            // Square around circle
             ctx.strokeStyle = "rgb(0,0,0)";
             ctx.lineWidth = 5;
             let x = 400;
             let y = 400;
             ctx.strokeRect(x, y, 100, 100);
 
-
+            // Circle in square
             ctx.beginPath();
             ctx.arc(x + 50, y + 50, 50, 0, Math.PI * 2);
             ctx.stroke();
@@ -92,6 +104,7 @@
             let px = 0;
             let py = 0;
 
+            // Pacman
             ctx.beginPath();
             ctx.moveTo(600, 250);
             px = r * Math.cos(angle);
@@ -107,21 +120,11 @@
 
             ctx.fillStyle = "rgb(255,255,0)";
 
-            // ctx.closePath();
             ctx.fill();
             ctx.stroke();
 
-            // ctx.beginPath();
-            // ctx.arc(600, 250, r, angle, (Math.PI * 2) - angle);
-            // ctx.lineTo(600, 250);
-
-
-            // ctx.fillStyle = "rgb(255,255,0)";
-
-            // ctx.closePath();
-            // ctx.fill();
-            // ctx.stroke();
-
+            // Keep looping
+            requestAnimationFrame(Loop);
         }
 
     </script>
