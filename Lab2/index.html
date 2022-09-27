@@ -80,11 +80,12 @@
                 ctx.lineWidth = 4;
                 ctx.stroke();
 
-                // Line in the middle
-                ctx.beginPath();
+                // Polar to cartisian Coordinates
                 let lx = this.r * Math.cos(-this.angle);
                 let ly = this.r * Math.sin(-this.angle);
-                console.log(lx, ly);
+
+                // Line in the middle
+                ctx.beginPath();
                 ctx.moveTo(this.x - lx, this.y - ly)
                 ctx.lineTo(this.x + lx, this.y + ly)
 
