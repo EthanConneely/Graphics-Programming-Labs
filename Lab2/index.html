@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Page Title</title>
+    <style type="text/css">
+        #mainCanvas {
+            border-width: 4px;
+            border-style: solid;
+            border-color: black;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- Name and id -->
+    <h1 style="text-align:center;">Ethan Conneely - G00393941</h1>
+    <canvas id="mainCanvas" width="800" height="600"></canvas>
+    <h2 id="debug"></h2>
+
+    <script type="text/javascript">
+
+        class Ball
+        {
+            x = 400;
+            y = 300;
+            vx = 3;
+            vy = 3;
+            r = 20;
+
+            angle = Math.PI / 8;
+
+            reverseRotation = 1;
+
+            colors = [
+                "red",
+                "blue",
+                "green",
+                "orange",
+                "magenta",
+                "yellow",
+                "lightblue"
+            ]
+
+            color = "red"
+
+            constructor()
+            {
+                // Randomize everything about the ball
+                this.x = ((Math.random() + .3) * .7) * canvas.width;
+                this.y = ((Math.random() + .3) * .7) * canvas.height;
+
+                this.vx = Math.random() * 5;
+                this.vy = Math.random() * 5;
+
+                this.r = (Math.random() * 20) + 10;
+
+                // Pick a random color from the list
+                let index = Math.floor(Math.random() * this.colors.length);
+                this.color = this.colors[index]
+            }
+
+            draw()
+            {
+                // Top half of pokeball
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, Math.PI - this.angle, -this.angle);
+                ctx.fillStyle = this.color
+                ctx.fill()
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // White half of ball
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, -this.angle, Math.PI - this.angle);
+                ctx.fillStyle = "white"
+                ctx.fill()
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Line in the middle
+                ctx.beginPath();
+                let lx = this.r * Math.cos(-this.angle);
+                let ly = this.r * Math.sin(-this.angle);
+                console.log(lx, ly);
+                ctx.moveTo(this.x - lx, this.y - ly)
+                ctx.lineTo(this.x + lx, this.y + ly)
+
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Center circle
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r / 2.5, 0, 2 * Math.PI);
+                ctx.fillStyle = "lightgray"
+                ctx.lineWidth = 4;
+                ctx.fill()
+                ctx.stroke();
+                ctx.closePath();
+            }
+
+            move()
+            {
+                // Apply the velocity to the ball
+                this.x += this.vx;
+                this.y += this.vy;
+                this.angle += Math.PI / 32 * this.reverseRotation;
+
+                // Bounce on the top and bottom walls
+                if (this.y > canvas.height - this.r || this.y < this.r)
+                {
+                    this.vy *= -1;
+                    this.reverseRotation *= -1;
+                }
+
+                // Bounce on the left and right walls
+                if (this.x > canvas.width - this.r || this.x < this.r)
+                {
+                    this.vx *= -1;
+                    this.reverseRotation *= -1;
+                }
+
+            }
+
+            resize(newRadius)
+            {
+                // Set the new radius
+                this.r = newRadius
+            }
+        }
+
+        let previousTimeStamp = 0;
+
+        requestAnimationFrame(Loop)
+
+        // Comments for vscode intilisense
+        /** @type {HTMLCanvasElement} */
+        let canvas = document.getElementById("mainCanvas");
+
+        /** @type {CanvasRenderingContext2D} */
+        let ctx = canvas.getContext('2d');
+
+        // Array of balls
+        let balls = [new Ball()];
+
+        function Loop(ts)
+        {
+            const dt = (ts - previousTimeStamp) / 1000.0;
+            const totalTime = (ts / 1000);
+
+            // Add a new ball every x seconds
+            if (totalTime % .05 < dt)
+            {
+                balls.push(new Ball());
+                document.getElementById("debug").textContent = "Balls " + balls.length;
+            }
+
+            if (balls.length >= 100)
+            {
+                balls.shift();
+            }
+
+            // Clear screen for animation
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+            previousTimeStamp = ts;
+
+            for (const ball of balls)
+            {
+                ball.move();
+                ball.draw();
+                // ball.resize(10);
+            }
+
+            // Keep looping
+            requestAnimationFrame(Loop);
+        }
+
+    </script>
+</body>
+
+</html>
