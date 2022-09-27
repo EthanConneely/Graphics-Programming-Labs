@@ -11,6 +11,10 @@
             border-color: black;
         }
 
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
     </style>
 </head>
 
@@ -26,8 +30,10 @@
         {
             x = 400;
             y = 300;
+
             vx = 3;
             vy = 3;
+
             r = 20;
 
             angle = Math.PI / 8;
@@ -55,6 +61,7 @@
                 this.vx = Math.random() * 5;
                 this.vy = Math.random() * 5;
 
+                // r = 10-30
                 this.r = (Math.random() * 20) + 10;
 
                 // Pick a random color from the list
