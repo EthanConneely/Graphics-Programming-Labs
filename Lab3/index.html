@@ -59,7 +59,7 @@
                 this.x = ((Math.random() + .3) * .7) * canvas.width;
                 this.y = ((Math.random() + .3) * .7) * canvas.height;
 
-                this.vx = 0;
+                this.vx = 2;
                 this.vy = 2;
 
                 // r = 10-30
@@ -124,7 +124,7 @@
                 {
                     this.vy *= -.9;
                     this.vx *= .9;
-                    this.rotationalVelocity *= -1;
+                    this.rotationalVelocity *= -.9;
                 }
 
                 // Bounce on the left and right walls
@@ -132,7 +132,7 @@
                 {
                     this.vx *= -.9;
                     this.vy *= .9;
-                    this.rotationalVelocity *= -1;
+                    this.rotationalVelocity *= -.9;
                 }
 
                 // Stop clipping into the wall
