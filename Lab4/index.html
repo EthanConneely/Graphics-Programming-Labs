@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Lab 5</title>
+
+    <meta charset='utf-8'>
+    <style type="text/css">
+        #mainCanvas {
+            border-width: 4px;
+            border-style: solid;
+            border-color: black;
+        }
+
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+    </style>
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+</head>
+
+<body>
+    <!-- Name and id -->
+    <h1 style="text-align:center;">Lab 5</h1>
+    <canvas id="mainCanvas" width="800" height="600"></canvas>
+
+    <script type="text/javascript">
+
+        // timer to show collision for .75 seconds
+        let collisionOccured = false;
+        let score = 0;
+
+        class Ball
+        {
+            x = 400;
+            y = 300;
+
+            vx = 3;
+            vy = 3;
+
+            r = 20;
+
+            angle = Math.PI / 6;
+
+            rotationalVelocity = 1;
+
+            colors = [
+                "red",
+                "blue",
+                "green",
+                "orange",
+                "magenta",
+                "yellow",
+                "lightblue"
+            ]
+
+            color = "red"
+
+            constructor()
+            {
+                // Randomize everything about the ball
+                this.x = ((Math.random() + .3) * .7) * canvas.width;
+                this.y = ((Math.random() + .3) * .7) * canvas.height;
+
+                this.vx = (Math.random() * 2) - 1;
+                this.vy = (Math.random() * 2) - 1;
+
+                // r = 10-30
+                this.r = (Math.random() * 20) + 10;
+
+                // Pick a random color from the list
+                let index = Math.floor(Math.random() * this.colors.length);
+                this.color = this.colors[index]
+            }
+
+            draw()
+            {
+                // Top half of pokeball
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, Math.PI - this.angle, -this.angle);
+                ctx.fillStyle = this.color
+                ctx.fill()
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // White half of ball
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, -this.angle, Math.PI - this.angle);
+                ctx.fillStyle = "white"
+                ctx.fill()
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Polar to cartisian Coordinates
+                let lx = this.r * Math.cos(-this.angle);
+                let ly = this.r * Math.sin(-this.angle);
+
+                // Line in the middle
+                ctx.beginPath();
+                ctx.moveTo(this.x - lx, this.y - ly)
+                ctx.lineTo(this.x + lx, this.y + ly)
+
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Center circle
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r / 2.5, 0, 2 * Math.PI);
+                ctx.fillStyle = "lightgray"
+                ctx.lineWidth = 4;
+                ctx.fill()
+                ctx.stroke();
+                ctx.closePath();
+            }
+
+            move()
+            {
+                // Gravity
+                this.vy += .05;
+
+                // Apply the velocity to the ball
+                this.x += this.vx;
+                this.y += this.vy;
+                this.angle += Math.PI / 32 * this.rotationalVelocity;
+
+                // Bounce on the top and bottom walls
+                if (this.y > canvas.height - this.r || this.y < this.r)
+                {
+                    this.vy *= -.9;
+                    this.vx *= .9;
+                    this.rotationalVelocity *= -.9;
+                }
+
+                // Bounce on the left and right walls
+                if (this.x > canvas.width - this.r || this.x < this.r)
+                {
+                    this.vx *= -.9;
+                    this.vy *= .9;
+                    this.rotationalVelocity *= -.9;
+                }
+
+                // Stop clipping into the wall
+                if (this.y > canvas.height - this.r)
+                {
+                    this.y = canvas.height - this.r;
+                }
+
+                if (this.y < this.r)
+                {
+                    this.y = this.r;
+                }
+
+                if (this.x > canvas.width - this.r)
+                {
+                    this.x = canvas.width - this.r;
+                }
+
+                if (this.x < this.r)
+                {
+                    this.x = this.r;
+                }
+
+            }
+
+            checkCollision(otherBall)
+            {
+                // Get the distance between this ball and the colliding ball
+                let dist = Math.sqrt(Math.pow(otherBall.x - this.x, 2) + Math.pow(otherBall.y - this.y, 2))
+                if (dist < this.r + otherBall.r)
+                {
+                    collisionOccured = true;// for the text
+                    setTimeout(() =>
+                    {
+                        collisionOccured = false;
+                    }, 750);
+                    score += 1;
+                    return true
+                }
+
+                return false
+            }
+        }
+
+        let previousTimeStamp = 0;
+
+        // Comments for vscode intilisense
+        /** @type {HTMLCanvasElement} */
+        let canvas = document.getElementById("mainCanvas");
+
+        /** @type {CanvasRenderingContext2D} */
+        let ctx = canvas.getContext('2d');
+
+        // Array of balls
+        let balls = [new Ball(), new Ball()];
+
+        // Create a new ball every 100ms
+        setInterval(() =>
+        {
+            if (balls.length < 50)
+            {
+                balls.push(new Ball());
+            }
+        }, 100);
+
+        addEventListener("keydown", function (e)
+        {
+            switch (e.which)
+            {
+                // key code for left arrow
+                case 37:
+                    balls[0].vx += -1;
+                    break;
+
+                // key code for up arrow
+                case 38:
+                    balls[0].vy += -1;
+                    break;
+
+                // key code for right arrow
+                case 39:
+                    balls[0].vx += 1;
+                    break;
+
+                // key code for down arrow
+                case 40:
+                    balls[0].vy += 1;
+                    break;
+
+                // key code fo o
+                case 79:
+                    balls[0].rotationalVelocity += .2;
+                    break;
+
+                // key code for p
+                case 80:
+                    balls[0].rotationalVelocity -= .2;
+                    break;
+            }
+        });
+
+        canvas.addEventListener("mousedown", function (event)
+        {
+            if (event.which == 1)
+            {
+                balls[0].x = event.clientX - canvas.offsetLeft;
+                balls[0].y = event.clientY - canvas.offsetTop;
+                balls[0].vx = 0;
+                balls[0].vy = 0;
+            }
+        });
+
+
+        function Loop(ts)
+        {
+            // Clear screen for animation
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+            previousTimeStamp = ts;
+
+            for (let i = 0; i < balls.length; i++)
+            {
+                balls[i].move();
+                balls[i].draw();
+
+                // Dont check for collision on its selfr
+                if (i != 0)
+                {
+                    if (balls[i].checkCollision(balls[0]))
+                    {
+                        balls.splice(i, 1)
+                    }
+                }
+            }
+
+            if (collisionOccured)
+            {
+                ctx.font = "20px Arial";
+                ctx.fillStyle = "black"
+                ctx.fillText("Collision Occured +1", 10, 25 * 2)
+            }
+
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "black"
+            ctx.fillText("Arrow keys apply velocity", 550, 25)
+            ctx.fillText("O/P changes the rotation", 550, 25 * 2)
+            ctx.fillText("Left click moves the ball", 550, 25 * 3)
+
+
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "black"
+            ctx.fillText("Score: " + score, 10, 25)
+
+
+            // Keep looping
+            requestAnimationFrame(Loop);
+        }
+
+        // Start the loop
+        requestAnimationFrame(Loop)
+
+
+    </script>
+</body>
+
+</html>
