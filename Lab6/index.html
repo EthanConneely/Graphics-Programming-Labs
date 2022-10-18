@@ -26,8 +26,9 @@
 
         // Create camera
         const camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 14;
-        camera.position.y = -18;
+        camera.position.z = 20;
+        camera.position.y = 5;
+
         camera.lookAt(0, 0, 0)
 
         // Add Sphere
@@ -41,14 +42,16 @@
         var wireframe = new THREE.LineSegments(geo, mat);
         sphere.add(wireframe);
 
+        var axesHelper = new THREE.AxesHelper(5);
+        scene.add(axesHelper);
+
         sphere.castShadow = true;
-        sphere.position.y = 2;
+        sphere.position.y = -4;
         scene.add(sphere);
 
         // Add Sphere 2
         sphere2 = new THREE.Mesh(geometry, material);
         sphere2.castShadow = true;
-        sphere2.position.z = 5;
 
         // wireframe
         var geo = new THREE.EdgesGeometry(geometry); // or WireframeGeometry
@@ -62,16 +65,17 @@
         geometry = new THREE.PlaneGeometry(10, 10);
         let planematerial = new THREE.MeshLambertMaterial({ color: 0xff0000, wireframe: false });
         let plane = new THREE.Mesh(geometry, planematerial);
+        plane.rotation.x = -Math.PI / 2
         plane.receiveShadow = true;
-        plane.position.z = -1
+        plane.position.y = -5
         scene.add(plane);
 
         // Add transparent box
         geometry = new THREE.BoxGeometry(10, 10, 10);
-        let boxmaterial = new THREE.MeshLambertMaterial({ color: 0xff0000, transparent: true, opacity: 0.4 });
+        let boxmaterial = new THREE.MeshLambertMaterial({ color: 0x0000FF, transparent: true, opacity: 0.2 });
         let box = new THREE.Mesh(geometry, boxmaterial);
         box.receiveShadow = true;
-        box.position.z = 4
+        // box.position.z = 4
         scene.add(box);
 
         // Add AmbientLight
@@ -98,9 +102,9 @@
 
         let hue = 0;
 
-        let vx = -6
-        let vy = -3
-        let vz = -12
+        let vx = -6;
+        let vy = -5;
+        let vz = -12;
 
         function Loop(ts)
         {
@@ -123,24 +127,23 @@
             sphere2.position.y += vy * .01;
             sphere2.position.z += vz * .01;
 
-            vz -= 0.12
+            vy -= 0.12
 
             let r = 1;
 
-            if (sphere2.position.z < 0 || sphere2.position.z > 10 - (r * 2))
+            if (sphere2.position.y < -5 + r || sphere2.position.y > 5 - r)
             {
-                vz *= -1;
+                vy *= -1;
             }
-
 
             if (sphere2.position.x < -5 + r || sphere2.position.x > 5 - r)
             {
                 vx *= -1;
             }
 
-            if (sphere2.position.y < -5 + r || sphere2.position.y > 5 - r)
+            if (sphere2.position.z < -5 + r || sphere2.position.z > 5 - r)
             {
-                vy *= -1;
+                vz *= -1;
             }
 
             // Keep looping
