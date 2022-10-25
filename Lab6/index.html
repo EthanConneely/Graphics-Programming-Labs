@@ -7,7 +7,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.145.0/three.min.js" integrity="sha512-mElAVmOZp/n8OKao194p++kIARCbLKnf/pdVTVI+ZkxL0Rmyw6p5C4kcLd67l2WdvfyBqFe6dI4lR3m++xhdnA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-
     <style>
         body {
             margin: 0;
@@ -37,7 +36,7 @@
         let sphere = new THREE.Mesh(geometry, material);
 
         // wireframe
-        var geo = new THREE.EdgesGeometry(geometry); // or WireframeGeometry
+        var geo = new THREE.WireframeGeometry(geometry);
         var mat = new THREE.LineBasicMaterial({ color: 0x449922 });
         var wireframe = new THREE.LineSegments(geo, mat);
         sphere.add(wireframe);
@@ -54,7 +53,7 @@
         sphere2.castShadow = true;
 
         // wireframe
-        var geo = new THREE.EdgesGeometry(geometry); // or WireframeGeometry
+        var geo = new THREE.WireframeGeometry(geometry);
         var mat = new THREE.LineBasicMaterial({ color: 0x449922 });
         var wireframe = new THREE.LineSegments(geo, mat);
         sphere2.add(wireframe);
@@ -72,10 +71,9 @@
 
         // Add transparent box
         geometry = new THREE.BoxGeometry(10, 10, 10);
-        let boxmaterial = new THREE.MeshLambertMaterial({ color: 0x0000FF, transparent: true, opacity: 0.2 });
+        let boxmaterial = new THREE.MeshLambertMaterial({ color: 0x0000FF, transparent: true, opacity: 0.5 });
         let box = new THREE.Mesh(geometry, boxmaterial);
         box.receiveShadow = true;
-        // box.position.z = 4
         scene.add(box);
 
         // Add AmbientLight
@@ -85,7 +83,7 @@
 
         // Add Light
         var spotLight = new THREE.DirectionalLight(0xffffff);
-        spotLight.position.set(15, -5, 20);
+        spotLight.position.set(10, 8, 0);
         spotLight.castShadow = true;
         scene.add(spotLight);
 
@@ -131,6 +129,7 @@
 
             let r = 1;
 
+            // Flip velocity when hitting any of the walls
             if (sphere2.position.y < -5 + r || sphere2.position.y > 5 - r)
             {
                 vy *= -1;
