@@ -13,7 +13,7 @@ scene.add(light);
 
 // Add Light
 var light = new THREE.SpotLight(0xffffff, 1);
-light.position.set(5, 0, 25);
+light.position.set(25, 0, 50);
 light.castShadow = true;
 light.lookAt(0, 0, 0)
 light.shadow.mapSize.width = 512 * 4; // default
@@ -52,10 +52,10 @@ function Loop(ts)
 {
     renderer.render(scene, camera)
 
-    paddle.x += movement;
+    paddle.x += movement * .25;
 
-    paddle.Update()
-    ball.Update()
+    paddle.update()
+    ball.update(scene)
 
     camera.lookAt(0, 0, 0)
 
@@ -82,16 +82,15 @@ document.addEventListener('keydown', function (event)
     movement = left + right;
 });
 
-
 document.addEventListener('keyup', function (event)
 {
     let key = event.key.toLowerCase();
 
-    if (key == "a" || key == "leftarrow")
+    if (key == "a" || key == "arrowleft")
     {
         left = 0;
     }
-    else if (key == "d" || key == "rightarrow")
+    else if (key == "d" || key == "arrowright")
     {
         right = 0;
     }
