@@ -1,37 +1,28 @@
+import * as THREE from 'three';
+import { Ball, Box, Paddle } from './classes.js';
+
 // Create scene
 const scene = new THREE.Scene();
 
 // Create camera
 const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 200);
 camera.position.z = 70;
-// camera.position.y = 70;
 
 // Add AmbientLight
 var light = new THREE.AmbientLight(0xffffff);
-light.intensity = 0.5;
+light.intensity = 0.75;
 scene.add(light);
 
 // Add Light
-var light = new THREE.SpotLight(0xffffff, 1);
+var light = new THREE.SpotLight(0xffffff, .75);
 light.position.set(25, 0, 50);
 light.castShadow = true;
 light.lookAt(0, 0, 0)
-light.shadow.mapSize.width = 512 * 4; // default
-light.shadow.mapSize.height = 512 * 4; // default
-
+light.shadow.mapSize.width = 512 * 8;
+light.shadow.mapSize.height = 512 * 8;
 scene.add(light);
 
-console.log(light.shadow.camera);
-
-// Add Background Plane
-geometry = new THREE.PlaneGeometry(35, 50);
-let planematerial = new THREE.MeshLambertMaterial({ color: 0xaa2233, wireframe: false });
-let mesh = new THREE.Mesh(geometry, planematerial);
-mesh.receiveShadow = true;
-mesh.position.y = 0
-mesh.position.z = 0.5
-scene.add(mesh);
-
+let box = new Box(scene);
 let paddle = new Paddle(scene);
 let ball = new Ball(scene);
 

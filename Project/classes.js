@@ -1,4 +1,6 @@
-class Paddle
+import * as THREE from 'three';
+
+export class Paddle
 {
     x = 0;
     y = -15;
@@ -12,7 +14,7 @@ class Paddle
         this.paddleMesh = new THREE.Mesh(geometry, material);
         this.paddleMesh.castShadow = true;
         this.paddleMesh.position.y = 0
-        this.paddleMesh.position.z = 5
+        this.paddleMesh.position.z = 1
         scene.add(this.paddleMesh);
     }
 
@@ -35,7 +37,7 @@ class Paddle
     }
 }
 
-class Ball
+export class Ball
 {
     x = 0;
     y = 0;
@@ -45,15 +47,19 @@ class Ball
 
     r = 1;
 
+    light = new THREE.PointLight(0x0000ff, 5, 10);
+
     constructor(scene)
     {
-        let geometry = new THREE.SphereGeometry(this.r, 12, 50);
-        let material = new THREE.MeshLambertMaterial({ color: 0xaaaaaa, wireframe: false });
+        let geometry = new THREE.SphereGeometry(this.r, 12, 12);
+        let material = new THREE.MeshLambertMaterial({ color: 0x2266aa, wireframe: false });
         this.ballmesh = new THREE.Mesh(geometry, material);
         this.ballmesh.castShadow = true;
         this.ballmesh.position.y = 0
         this.ballmesh.position.z = this.r; // sit it on the background plane
         scene.add(this.ballmesh);
+
+        scene.add(this.light);
     }
 
     update(scene)
@@ -119,6 +125,9 @@ class Ball
 
         }
 
+        this.light.position.x = this.x;
+        this.light.position.y = this.y;
+        this.light.position.z = 1;
 
         this.ballmesh.position.x = this.x;
         this.ballmesh.position.y = this.y;
@@ -140,5 +149,47 @@ class Ball
         }
 
         return false
+    }
+}
+
+export class Box
+{
+    constructor(scene)
+    {
+        let mat = new THREE.MeshLambertMaterial({ color: 0xaa2233, wireframe: false });
+        let geometry = new THREE.PlaneGeometry(100, 100);
+
+        // Add Background Plane
+        let mesh = new THREE.Mesh(geometry, mat);
+        mesh.receiveShadow = true;
+        scene.add(mesh);
+
+        // Add Top Plane
+        mesh = new THREE.Mesh(geometry, mat);
+        mesh.receiveShadow = true;
+        mesh.position.y = 20
+        mesh.rotation.x = Math.PI / 2;
+        scene.add(mesh);
+
+        // Add Bottom Plane
+        mesh = new THREE.Mesh(geometry, mat);
+        mesh.receiveShadow = true;
+        mesh.position.y = -20
+        mesh.rotation.x = -Math.PI / 2;
+        scene.add(mesh);
+
+        // Add Right Plane
+        mesh = new THREE.Mesh(geometry, mat);
+        mesh.receiveShadow = true;
+        mesh.position.x = 34 / 2.0
+        mesh.rotation.y = -Math.PI / 2;
+        scene.add(mesh);
+
+        // Add Left Plane
+        mesh = new THREE.Mesh(geometry, mat);
+        mesh.receiveShadow = true;
+        mesh.position.x = - 34 / 2.0
+        mesh.rotation.y = Math.PI / 2;
+        scene.add(mesh);
     }
 }
