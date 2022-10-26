@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Ball, Box, Paddle } from './classes.js';
+import { Ball, Walls, Paddle, Brick } from './classes.js';
 
 // Create scene
 const scene = new THREE.Scene();
@@ -22,9 +22,20 @@ light.shadow.mapSize.width = 512 * 8;
 light.shadow.mapSize.height = 512 * 8;
 scene.add(light);
 
-new Box(scene);
+new Walls(scene);
 let paddle = new Paddle(scene);
 let ball = new Ball(scene);
+
+let bricks = []
+
+for (let x = 0; x < 7; x++)
+{
+    for (let y = 0; y < 7; y++)
+    {
+        let brick = new Brick(scene, (x * 4.5 - 13.5) + y % 2, 18 - y * 2);
+        bricks.push(brick)
+    }
+}
 
 // Create renderer
 const renderer = new THREE.WebGLRenderer();
@@ -53,7 +64,6 @@ function Loop(ts)
     // Keep looping
     requestAnimationFrame(Loop);
 }
-
 // Start the loop
 requestAnimationFrame(Loop)
 
@@ -77,11 +87,11 @@ document.addEventListener('keyup', function (event)
 {
     let key = event.key.toLowerCase();
 
-    if (key == "a" || key == "arrowleft")
+    if (key == "a" || key == "leftarrow")
     {
         left = 0;
     }
-    else if (key == "d" || key == "arrowright")
+    else if (key == "d" || key == "rightarrow")
     {
         right = 0;
     }

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Mesh, Vector3 } from 'three';
 
 export class Paddle
 {
@@ -38,6 +39,21 @@ export class Paddle
     }
 }
 
+export class Brick
+{
+    constructor(scene, x, y)
+    {
+        let geometry = new THREE.BoxGeometry(3.5, 1.5, 2);
+        let material = new THREE.MeshLambertMaterial({ color: 0xeeff22, wireframe: false });
+        this.paddleMesh = new THREE.Mesh(geometry, material);
+        this.paddleMesh.castShadow = true;
+        this.paddleMesh.position.x = x;
+        this.paddleMesh.position.y = y;
+
+        scene.add(this.paddleMesh);
+    }
+}
+
 export class Ball
 {
     x = 0;
@@ -52,7 +68,7 @@ export class Ball
 
     raycaster = new THREE.Raycaster();
 
-    arrow = new THREE.ArrowHelper(this.raycaster.ray.direction, this.raycaster.ray.origin, 8, 0xff0000);
+    arrow = new THREE.ArrowHelper(this.raycaster.ray.direction, this.raycaster.ray.origin, 8, 0x00ff00);
 
     constructor(scene)
     {
@@ -78,10 +94,6 @@ export class Ball
         let left = -width + this.r;
         let right = width - this.r;
 
-        // Apply the velocity to the ball
-        this.x += this.vx;
-        this.y += this.vy;
-
         // Bounce on the top and bottom walls
         if (this.y > top || this.y < bottom)
         {
@@ -94,20 +106,62 @@ export class Ball
             this.vx *= -1;
         }
 
-        let box = new THREE.Box3();
-        box.setFromCenterAndSize(new THREE.Vector3(0, 0, 0), new THREE.Vector3(15, 1, 1))
+        // Stop clipping into the wall
+        if (this.y > top)
+        {
+            this.y = top;
+        }
 
-        this.raycaster.set(new THREE.Vector3(this.x, this.y, 0), new THREE.Vector3(this.vx, this.vy, 0))
+        if (this.y < bottom)
+        {
+            this.y = bottom;
+        }
 
-        this.arrow.position.x = this.x;
-        this.arrow.position.y = this.y;
-        this.arrow.setDirection(new THREE.Vector3(this.vx, this.vy, 0));
+        if (this.x > right)
+        {
+            this.x = right;
+        }
 
-        let intersections = this.raycaster.intersectObjects(box);
+        if (this.x < left)
+        {
+            this.x = left;
+        }
+
+        // Bounce on the left and right walls
+        if (this.x > right || this.x < left)
+        {
+            this.vx *= -1;
+        }
+
+        this.raycaster.set(new Vector3(this.x, this.y, 1), new Vector3(this.vx, this.vy, 0))
+
+        let intersections = this.raycaster.intersectObjects(scene.children);
         for (const intersection of intersections)
         {
-            console.log(intersection.point);
+            if (intersection.distance - this.r > .1)
+            {
+                continue;
+            }
+
+            if (!intersection.face || !intersection.face.normal)
+            {
+                continue;
+            }
+
+            if (intersection.face.normal.x == 1 || intersection.face.normal.x == -1)
+            {
+                this.vx *= -1;
+            }
+
+            if (intersection.face.normal.y == 1 || intersection.face.normal.y == -1)
+            {
+                this.vy *= -1;
+            }
         }
+
+        // Apply the velocity to the ball
+        this.x += this.vx;
+        this.y += this.vy;
 
         this.light.position.x = this.x;
         this.light.position.y = this.y;
@@ -118,7 +172,7 @@ export class Ball
     }
 }
 
-export class Box
+export class Walls
 {
     constructor(scene)
     {
@@ -131,28 +185,28 @@ export class Box
         scene.add(mesh);
 
         // Add Top Plane
-        mesh = new THREE.Mesh(geometry, mat);
+        mesh = new Mesh(geometry, mat);
         mesh.receiveShadow = true;
         mesh.position.y = 20
         mesh.rotation.x = Math.PI / 2;
         scene.add(mesh);
 
         // Add Bottom Plane
-        mesh = new THREE.Mesh(geometry, mat);
+        mesh = new Mesh(geometry, mat);
         mesh.receiveShadow = true;
         mesh.position.y = -20
         mesh.rotation.x = -Math.PI / 2;
         scene.add(mesh);
 
         // Add Right Plane
-        mesh = new THREE.Mesh(geometry, mat);
+        mesh = new Mesh(geometry, mat);
         mesh.receiveShadow = true;
         mesh.position.x = 34 / 2.0
         mesh.rotation.y = -Math.PI / 2;
         scene.add(mesh);
 
         // Add Left Plane
-        mesh = new THREE.Mesh(geometry, mat);
+        mesh = new Mesh(geometry, mat);
         mesh.receiveShadow = true;
         mesh.position.x = - 34 / 2.0
         mesh.rotation.y = Math.PI / 2;
