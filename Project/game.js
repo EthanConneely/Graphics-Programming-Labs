@@ -22,7 +22,7 @@ light.shadow.mapSize.width = 512 * 8;
 light.shadow.mapSize.height = 512 * 8;
 scene.add(light);
 
-let box = new Box(scene);
+new Box(scene);
 let paddle = new Paddle(scene);
 let ball = new Ball(scene);
 

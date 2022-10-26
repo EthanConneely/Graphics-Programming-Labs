@@ -13,14 +13,15 @@ export class Paddle
         let material = new THREE.MeshLambertMaterial({ color: 0xaaaaaa, wireframe: false });
         this.paddleMesh = new THREE.Mesh(geometry, material);
         this.paddleMesh.castShadow = true;
-        this.paddleMesh.position.y = 0
-        this.paddleMesh.position.z = 1
+        this.paddleMesh.position.y = 0;
+        this.paddleMesh.position.z = 1;
+
         scene.add(this.paddleMesh);
     }
 
     update()
     {
-        let dist = 11
+        let dist = 11;
 
         if (this.x < -dist)
         {
@@ -49,6 +50,10 @@ export class Ball
 
     light = new THREE.PointLight(0x0000ff, 5, 10);
 
+    raycaster = new THREE.Raycaster();
+
+    arrow = new THREE.ArrowHelper(this.raycaster.ray.direction, this.raycaster.ray.origin, 8, 0xff0000);
+
     constructor(scene)
     {
         let geometry = new THREE.SphereGeometry(this.r, 12, 12);
@@ -57,8 +62,9 @@ export class Ball
         this.ballmesh.castShadow = true;
         this.ballmesh.position.y = 0
         this.ballmesh.position.z = this.r; // sit it on the background plane
-        scene.add(this.ballmesh);
 
+        scene.add(this.ballmesh);
+        scene.add(this.arrow);
         scene.add(this.light);
     }
 
@@ -80,49 +86,27 @@ export class Ball
         if (this.y > top || this.y < bottom)
         {
             this.vy *= -1;
-            this.vx *= 1;
-            this.rotationalVelocity *= -1;
         }
 
         // Bounce on the left and right walls
         if (this.x > right || this.x < left)
         {
             this.vx *= -1;
-            this.vy *= 1;
-            this.rotationalVelocity *= -1;
         }
-
-        // Stop clipping into the wall
-        if (this.y > top)
-        {
-            this.y = top;
-        }
-
-        if (this.y < bottom)
-        {
-            this.y = bottom;
-        }
-
-        if (this.x > right)
-        {
-            this.x = right;
-        }
-
-        if (this.x < bottom)
-        {
-            this.x = bottom;
-        }
-
-        let boxPos = new THREE.Box3();
-        boxPos.setFromCenterAndSize(new THREE.Vector3(this.x, this.y, 0), new THREE.Vector3(this.r, this.r, this.r))
 
         let box = new THREE.Box3();
         box.setFromCenterAndSize(new THREE.Vector3(0, 0, 0), new THREE.Vector3(15, 1, 1))
 
-        if (boxPos.intersectsBox(box))
-        {
-            console.log("HIT");
+        this.raycaster.set(new THREE.Vector3(this.x, this.y, 0), new THREE.Vector3(this.vx, this.vy, 0))
 
+        this.arrow.position.x = this.x;
+        this.arrow.position.y = this.y;
+        this.arrow.setDirection(new THREE.Vector3(this.vx, this.vy, 0));
+
+        let intersections = this.raycaster.intersectObjects(box);
+        for (const intersection of intersections)
+        {
+            console.log(intersection.point);
         }
 
         this.light.position.x = this.x;
@@ -131,24 +115,6 @@ export class Ball
 
         this.ballmesh.position.x = this.x;
         this.ballmesh.position.y = this.y;
-    }
-
-    checkCollision(otherBall)
-    {
-        // Get the distance between this ball and the colliding ball
-        let dist = Math.sqrt(Math.pow(otherBall.x - this.x, 2) + Math.pow(otherBall.y - this.y, 2))
-        if (dist < this.r + otherBall.r)
-        {
-            collisionOccured = true;// for the text
-            setTimeout(() =>
-            {
-                collisionOccured = false;
-            }, 750);
-            score += 1;
-            return true
-        }
-
-        return false
     }
 }
 
