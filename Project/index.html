@@ -33,12 +33,24 @@
             color: white;
         }
 
+        #Gameover {
+            position: absolute;
+            width: 100vw;
+            text-align: center;
+            top: 25%;
+            font-size: 4rem;
+            color: red;
+            text-shadow: black 2px 5px 10px;
+            display: none;
+        }
+
     </style>
 </head>
 
 <body>
-    <h1 id="Score">Score: 100</h1>
-    <h3 id="Highscore">Highscore: 100</h3>
+    <h1 id="Score">Score: 0</h1>
+    <h3 id="Highscore">Highscore: 0</h3>
+    <h1 id="Gameover">Game Over :(</h1>
 
     <script src="game.js" type="module"></script>
 </body>

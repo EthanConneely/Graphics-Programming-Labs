@@ -2,7 +2,7 @@ import Paddle from "./Paddle.js";
 import Brick from "./Brick.js";
 import Ball from "./Ball.js";
 import Walls from "./Walls.js";
-import { AmbientLight, Color, OrthographicCamera, PerspectiveCamera, Scene, SpotLight, WebGLRenderer } from 'three';
+import { AmbientLight, Color, OrthographicCamera, PerspectiveCamera, Scene, SpotLight, Vector2, WebGLRenderer } from 'three';
 import * as THREE from 'three';
 
 const brickWidth = 7;
@@ -39,11 +39,32 @@ window.addEventListener("pointEvent", (p) =>
 {
     score++
     document.getElementById("Score").textContent = "Score: " + score
-
     if (score % (brickWidth * brickHeight) == 0)
     {
+        ball.isHeld = true;
         spawnBricks();
     }
+})
+
+window.addEventListener("gameover", (p) =>
+{
+    score = 0
+    document.getElementById("Score").textContent = "Score: " + score
+
+    if ((localStorage.getItem("Highscore") | 0) <= score)
+    {
+        localStorage.setItem("Highscore", score);
+    }
+    ball.isHeld = true;
+    paddle.x = 0;
+    spawnBricks();
+
+    document.getElementById("Gameover").style.display = "block"
+
+    setTimeout(() =>
+    {
+        document.getElementById("Gameover").style.display = "none"
+    }, 1000);
 })
 
 spawnBricks();
@@ -60,12 +81,17 @@ document.body.appendChild(renderer.domElement);
 let left = 0;
 let right = 0;
 let movement = 0;
-
-let slowdown = false
+let shootBall = false;
 
 function spawnBricks()
 {
-    ball.position.y = paddle.y + 2;
+    for (const object of scene.children)
+    {
+        if (object.name == "Brick")
+        {
+            scene.remove(object)
+        }
+    }
 
     for (let x = 0; x < brickWidth; x++)
     {
@@ -89,23 +115,24 @@ function Loop(ts)
     paddle.x += movement * .25;
     paddle.update()
 
+    if (shootBall)
+    {
+        shootBall = false;
+        ball.isHeld = false;
+        ball.velocity = new Vector2(Math.random() - .5, .25).normalize().setLength(.3)
+    }
+
+    if (ball.isHeld)
+    {
+        ball.position = new Vector2(paddle.x, paddle.y + 1.5)
+    }
+
     ball.update()
+
 
     camera.lookAt(paddle.x, paddle.y + 15, 0)
 
-    // Keep looping
-    if (slowdown)
-    {
-        setTimeout(() => requestAnimationFrame(Loop), 1000 / 5)
-        requestAnimationFrame(Loop)
-        requestAnimationFrame(Loop)
-        requestAnimationFrame(Loop)
-
-    }
-    else
-    {
-        requestAnimationFrame(Loop)
-    }
+    requestAnimationFrame(Loop)
 }
 // Start the loop
 requestAnimationFrame(Loop)
@@ -122,9 +149,9 @@ document.addEventListener('keydown', function (event)
     {
         right = 1;
     }
-    if (key == " ")
+    if (key == " " && ball.isHeld)
     {
-        slowdown = true;
+        shootBall = true;
     }
 
     movement = left + right;
@@ -142,10 +169,7 @@ document.addEventListener('keyup', function (event)
     {
         right = 0;
     }
-    if (key == " ")
-    {
-        slowdown = false;
-    }
+
     movement = left + right;
 });
 

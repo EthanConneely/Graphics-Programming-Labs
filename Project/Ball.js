@@ -5,7 +5,7 @@ export default class Ball
 {
     position = new Vector2(0, 0);
 
-    velocity = new Vector2(0.1, .5);
+    velocity = new Vector2(0);
 
     r = 1;
 
@@ -20,6 +20,9 @@ export default class Ball
     scene = new THREE.Scene()
 
     pointEvent = new CustomEvent("pointEvent", {});
+    gameoverEvent = new CustomEvent("gameover", {});
+
+    isHeld = true;
 
     constructor(threeJsScene)
     {
@@ -42,11 +45,15 @@ export default class Ball
 
     update()
     {
-        this.handleBounces();
+        // if the ball is being help dont check collisions or move it
+        if (!this.isHeld)
+        {
+            this.handleBounces();
 
-        // Apply the velocity to the ball
-        this.position.x += this.velocity.x;
-        this.position.y += this.velocity.y;
+            // Apply the velocity to the ball
+            this.position.x += this.velocity.x;
+            this.position.y += this.velocity.y;
+        }
 
         this.light.position.x = this.position.x;
         this.light.position.y = this.position.y;
@@ -128,8 +135,6 @@ export default class Ball
 
                 this.velocity.x += percent
 
-                this.velocity = this.velocity.normalize();
-
                 // make it so that velocity going up and down is never less than 1/4
                 // will make bugs where the ball is stuck going left and right forever stop
                 if (Math.abs(this.velocity.y) < .5)
@@ -139,9 +144,15 @@ export default class Ball
                     this.velocity.y = .5 * Math.sign(this.velocity.y)
                 }
 
-                this.velocity = this.velocity.multiplyScalar(.5);
             }
 
+            if (intersection.object.name == "Dead")
+            {
+                window.dispatchEvent(this.gameoverEvent)
+            }
+
+            this.velocity = this.velocity.normalize();
+            this.velocity = this.velocity.multiplyScalar(.25);
         }
     }
 }
