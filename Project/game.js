@@ -2,7 +2,7 @@ import Paddle from "./Paddle.js";
 import Brick from "./Brick.js";
 import Ball from "./Ball.js";
 import Walls from "./Walls.js";
-import { AmbientLight, Color, OrthographicCamera, PerspectiveCamera, Scene, SpotLight, Vector2, WebGLRenderer } from 'three';
+import { AmbientLight, Color, PerspectiveCamera, Scene, SpotLight, Vector2, WebGLRenderer } from 'three';
 import * as THREE from 'three';
 
 const brickWidth = 7;
@@ -12,7 +12,6 @@ const brickHeight = 10;
 const scene = new Scene();
 
 // Create camera
-// const camera = new OrthographicCamera(-26 * (window.innerWidth / window.innerHeight), 26 * (window.innerWidth / window.innerHeight), 26, -26, 0.1, 1000);
 const camera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 200);
 camera.position.z = 50;
 
@@ -32,13 +31,22 @@ scene.add(light);
 
 var score = 0;
 
+// Add the walls to the scene
 new Walls(scene);
+
 let paddle = new Paddle(scene);
 let ball = new Ball(scene);
+
+// Handle the event when the ball bounces into a brick
 window.addEventListener("pointEvent", (p) =>
 {
+    // Increase the score
     score++
+
+    // Update the html text display of the score
     document.getElementById("Score").textContent = "Score: " + score
+
+    // Spawn a new set of bricks everytime we clear all the bricks
     if (score % (brickWidth * brickHeight) == 0)
     {
         ball.isHeld = true;
@@ -46,21 +54,28 @@ window.addEventListener("pointEvent", (p) =>
     }
 })
 
+// Handle when the ball dies
 window.addEventListener("gameover", (p) =>
 {
+    // Set score to zero
     score = 0
+
+    // Set html score to zero
     document.getElementById("Score").textContent = "Score: " + score
 
     if ((localStorage.getItem("Highscore") | 0) <= score)
     {
         localStorage.setItem("Highscore", score);
     }
+    // Reset the games state
     ball.isHeld = true;
     paddle.x = 0;
     spawnBricks();
 
+    // Show the gameover overlay
     document.getElementById("Gameover").style.display = "block"
 
+    // After 1 second disable the title
     setTimeout(() =>
     {
         document.getElementById("Gameover").style.display = "none"
@@ -72,6 +87,8 @@ spawnBricks();
 // Create renderer
 const renderer = new WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
+
+// Enable shadows
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -85,14 +102,18 @@ let shootBall = false;
 
 function spawnBricks()
 {
-    for (const object of scene.children)
+    // Delete all remaining bricks on the screen
+    for (let i = scene.children.length - 1; i >= 0; i--)
     {
+        let object = scene.children[i]
+
         if (object.name == "Brick")
         {
             scene.remove(object)
         }
     }
 
+    // Spawn all the bricks
     for (let x = 0; x < brickWidth; x++)
     {
         for (let y = 0; y < brickHeight; y++)
@@ -108,7 +129,7 @@ function spawnBricks()
     }
 }
 
-function Loop(ts)
+function Loop()
 {
     renderer.render(scene, camera)
 
@@ -129,7 +150,6 @@ function Loop(ts)
 
     ball.update()
 
-
     camera.lookAt(paddle.x, paddle.y + 15, 0)
 
     requestAnimationFrame(Loop)
@@ -137,6 +157,7 @@ function Loop(ts)
 // Start the loop
 requestAnimationFrame(Loop)
 
+// Input key dowwn events
 document.addEventListener('keydown', function (event)
 {
     let key = event.key.toLowerCase();
@@ -157,6 +178,7 @@ document.addEventListener('keydown', function (event)
     movement = left + right;
 });
 
+// Input key up events
 document.addEventListener('keyup', function (event)
 {
     let key = event.key.toLowerCase();
@@ -172,5 +194,3 @@ document.addEventListener('keyup', function (event)
 
     movement = left + right;
 });
-
-document.getElementById("Highscore").textContent = "Highscore: " + (localStorage.getItem("Highscore") | 0);

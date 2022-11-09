@@ -7,6 +7,7 @@ export default class Paddle
 
     paddleMesh = new Mesh();
 
+    // Initialize Paddle
     constructor(scene)
     {
         let geometry = new BoxGeometry(10, 1, 2);
@@ -24,16 +25,18 @@ export default class Paddle
     {
         let dist = 12;
 
+        // Restrict the movement of the paddle to stop it from
+        // Escaping out of the bounds of the map
         if (this.x < -dist)
         {
             this.x = -dist;
         }
-
-        if (this.x > dist)
+        else if (this.x > dist)
         {
             this.x = dist;
         }
 
+        // Set the position of the mesh to the classes position
         this.paddleMesh.position.x = this.x;
         this.paddleMesh.position.y = this.y;
     }

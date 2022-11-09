@@ -3,6 +3,7 @@ import { Mesh } from 'three';
 
 export default class Walls
 {
+    // Initialize Walls
     constructor(scene)
     {
         let mat = new THREE.MeshLambertMaterial({ color: 0x444444, wireframe: false });

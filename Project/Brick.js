@@ -3,6 +3,7 @@ import * as THREE from 'three';
 
 export default class Brick
 {
+    // Initialize Brick
     constructor(scene, x, y, color)
     {
         let geometry = new THREE.BoxGeometry(3.5, 1.5, 2);
