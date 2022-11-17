@@ -121,7 +121,7 @@ function lineGraph(data)
 
             var s = e.selection || x2.range();
 
-            graph.select(".xAxis").call(d3.axisBottom(x));;
+            graph.select(".xAxis").call(d3.axisBottom(x));
             graph.select(".trendLine").attr("d", trendLine);
             graph.select(".interpolatedLine").attr("d", interpolatedLine);
 
