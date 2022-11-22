@@ -1,42 +1,47 @@
-import * as d3 from "d3";
-
-let dataUrl = "https://jsonblob.com/api/1039328202555932672"
-
-let resp = await fetch(dataUrl)
-let json = await resp.json()
-
-// set the dimensions and margins of the graph
+main()
 var margin = { top: 10, right: 30, bottom: 30, left: 60 };
 var width = 800 - margin.left - margin.right;
 var height = 600 - margin.top - margin.bottom;
 var margin2 = { top: 10, right: 30, bottom: 30, left: 60 };
 var height2 = 160;
 
-// append the svg object to the body of the page
-var graph = d3.select("#root")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + height2 + 100)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+async function main()
+{
+    let dataUrl = "https://jsonblob.com/api/1039328202555932672"
 
 
 
-// Add X axis --> it is a date format
-var x = d3.scaleTime()
-    .domain(d3.extent(json,
-        (d) =>
-        {
-            return Date.parse(d.Date);
-        }
-    ))
-    .range([0, width]);
+    let resp = await fetch(dataUrl)
+    let json = await resp.json()
+
+    // set the dimensions and margins of the graph
+
+    // append the svg object to the body of the page
+    var graph = d3.select("#root")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + height2 + 100)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
 
-lineGraph(json)
+    // Add X axis --> it is a date format
+    var x = d3.scaleTime()
+        .domain(d3.extent(json,
+            (d) =>
+            {
+                return Date.parse(d.Date);
+            }
+        ))
+        .range([0, width]);
 
-function lineGraph(data)
+
+
+    lineGraph(json, graph, x)
+}
+
+function lineGraph(data, graph, x)
 {
 
     var x2 = d3.scaleTime()
