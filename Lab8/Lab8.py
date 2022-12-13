@@ -83,13 +83,13 @@ plt.yticks([])
 
 clippedImg = sobbleBoth
 
-for i in range(0, clippedImg.shape[0]):
-    for j in range(0, clippedImg.shape[1]):
-        pixel = clippedImg[i, j]
-        if pixel < 2000:
-            clippedImg.itemset(i, j, 0)
+for x in range(0, clippedImg.shape[0]):
+    for y in range(0, clippedImg.shape[1]):
+        pixel = clippedImg[x, y]
+        if pixel < 1000:
+            clippedImg.itemset(x, y, 0)
         else:
-            clippedImg.itemset(i, j, 1)
+            clippedImg.itemset(x, y, 1)
 
 plt.subplot(3, 4, 10)
 plt.imshow(clippedImg, cmap="gray")
@@ -99,21 +99,21 @@ plt.yticks([])
 
 edgeImg = np.zeros((gray_image.shape[0], gray_image.shape[1]), np.uint8)
 
-for i in range(0, gray_image.shape[0]):
-    for j in range(0, gray_image.shape[1]):
-        pixelHorA = gray_image.item(i, j)
-        if i < gray_image.shape[0] - 1:
-            pixelHorB = gray_image.item(i + 1, j)
+for x in range(0, gray_image.shape[0]):
+    for y in range(0, gray_image.shape[1]):
+        pixelHorA = gray_image.item(x, y)
+        if x < gray_image.shape[0] - 1:
+            pixelHorB = gray_image.item(x + 1, y)
         else:
             pixelHorB = pixelHorA
 
-        pixelVerA = gray_image.item(i, j)
-        if j < gray_image.shape[1] - 1:
-            pixelVerB = gray_image.item(i, j + 1)
+        pixelVerA = gray_image.item(x, y)
+        if y < gray_image.shape[1] - 1:
+            pixelVerB = gray_image.item(x, y + 1)
         else:
             pixelVerB = pixelVerA
 
-        edgeImg.itemset(i, j, np.abs((pixelHorA - pixelHorB) + (pixelVerA - pixelVerB)))
+        edgeImg.itemset(x, y, np.abs((pixelHorA - pixelHorB) + (pixelVerA - pixelVerB)))
 
 plt.subplot(3, 4, 11)
 plt.imshow(edgeImg, cmap="gray")
